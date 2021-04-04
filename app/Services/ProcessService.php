@@ -25,7 +25,7 @@ class ProcessService
 
 
         $shows = $this->databseRepository->fetchAll($limit);
-        $shows = (json_decode(json_encode($shows), true));
+
         if(count($shows['data']) > 0){
 
             return $shows;
@@ -67,7 +67,7 @@ class ProcessService
         $latestRecord   = $this->databseRepository->fetchLatest();
         $limit          = $latestRecord->show_id ?? 0;
 
-        return $limit > 0 ? floor($latestRecord->show_id / 250) : $limit;
+        return $limit > 0 ? ceil($latestRecord->show_id / 250) : $limit;
     }
 
     private function processShowArray(array $data): array

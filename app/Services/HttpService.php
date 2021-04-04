@@ -7,18 +7,13 @@ use Psr\Http\Message\ResponseInterface;
 
 class HttpService
 {
-    private $apiUrl;
-
-    public function __construct()
-    {
-        $this->apiUrl = Config::get('tvmaze.api_url');
-    }
 
     public function getData(string $method, array $query): array
     {
-        $url = sprintf('%s%s',$this->apiUrl, $method);
-        $response = $this->getResponse($url, $query);
-        $result = [
+        $apiUrl     = Config::get('tvmaze.api_url');
+        $url        = sprintf('%s%s',$apiUrl, $method);
+        $response   = $this->getResponse($url, $query);
+        $result     = [
             'data'      => [],
             'status'    => false
         ];

@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use App\Services\ProcessService;
+use App\Services\ShowsService;
 use Illuminate\Http\Response;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -14,7 +14,7 @@ class APIController extends Controller
 
     private $defaultShowsLimit;
 
-    public function __construct(ProcessService $processService)
+    public function __construct(ShowsService $processService)
     {
         $this->processService       = $processService;
         $this->defaultShowsLimit    = Config::get('tvmaze.shows_limit');

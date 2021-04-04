@@ -6,7 +6,7 @@ namespace App\Repository;
 
 use App\Models\Show;
 
-class DatabseRepository implements DatabaseRepositoryInterface
+class DatabaseRepository implements DatabaseRepositoryInterface
 {
 
     public function fetchAll(int $limit)

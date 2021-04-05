@@ -8,7 +8,7 @@ namespace App\Repository;
 interface TVShowsRepositoryInterface
 {
 
-    public function fetchAll(int $limit);
+    public function fetchAll(int $limit): array;
 
-    public function findByName(string $name);
+    public function findByName(string $name): array;
 }

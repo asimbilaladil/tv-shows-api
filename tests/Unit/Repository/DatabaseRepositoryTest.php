@@ -33,7 +33,7 @@ class DatabaseRepositoryTest extends TestCase
         $this->assertEquals(3, count($result['data']));
     }
 
-    public function testFindByName()
+    public function testFindByName(): void
     {
         $show = Show::factory()->create();
         $name = $show['name'];
@@ -43,7 +43,7 @@ class DatabaseRepositoryTest extends TestCase
         $this->assertEquals($expected, $result['data'][0]['name']);
     }
 
-    public function testInsert()
+    public function testInsert(): void
     {
         $show = Show::factory()->make();
         $data = [
@@ -54,11 +54,11 @@ class DatabaseRepositoryTest extends TestCase
             'status' => $show['status'],
         ];
 
-        $this->databaseRepository->insert($data);
+        $this->databaseRepository->updateOrCreate($data);
         $this->assertDatabaseHas('shows', $data);
     }
 
-    public function testFetchLatest()
+    public function testFetchLatest(): void
     {
         $show = Show::factory()->count(5)->create();
         $result = $this->databaseRepository->fetchLatest();

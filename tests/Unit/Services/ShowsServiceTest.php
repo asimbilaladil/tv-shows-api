@@ -1,5 +1,6 @@
 <?php
 
+declare(strict_types=1);
 
 namespace Tests\Unit\Services;
 
@@ -8,12 +9,16 @@ use App\Models\Show;
 use App\Repository\DatabaseRepository;
 use App\Repository\TVMazeRepository;
 use App\Services\ShowsService;
+use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Config;
 use Mockery;
+use ReflectionClass;
 use Tests\TestCase;
 
 class ShowsServiceTest extends TestCase
 {
+    use RefreshDatabase;
+
     private $databaseRepository;
 
     private $tvMazeRepository;
@@ -29,18 +34,9 @@ class ShowsServiceTest extends TestCase
         Config::set('shows.search_shows', 'search');
     }
 
-    public function invokeMethod(&$object, string $methodName, array $parameters = [])
-    {
-        $reflection = new \ReflectionClass(get_class($object));
-        $method = $reflection->getMethod($methodName);
-        $method->setAccessible(true);
-
-        return $method->invokeArgs($object, $parameters);
-    }
-
     public function testProcessLimit(): void
     {
-        $data = (object)[
+        $data = [
             'show_id' => 300
         ];
 
@@ -50,54 +46,31 @@ class ShowsServiceTest extends TestCase
         $showService = new ShowsService($this->tvMazeRepository, $this->databaseRepository);
         $result = $this->invokeMethod($showService, 'processLimit', []);
 
-        $this->assertEquals(2, $result);
+        $this->assertEquals(ceil($data['show_id'] / 250), $result);
     }
 
-    public function testInsertShows(): void
+    public function invokeMethod(&$object, string $methodName, array $parameters = [])
     {
-        $show = Show::factory()->make();
+        $reflection = new ReflectionClass(get_class($object));
+        $method = $reflection->getMethod($methodName);
+        $method->setAccessible(true);
 
-        $data = ['show' =>
-            [
-                'id'   => $show['show_id'],
-                'name' => $show['name'],
-                'image' => $show['image'],
-                'url' => $show['link'],
-                'status' => $show['status'],
-            ]];
-
-        $expected = [
-            'name' => $show['name'],
-            'image' => $show['image'],
-            'link' => $show['link'],
-            'show_id' => $show['show_id'],
-            'status' => $show['status'],
-        ];
-
-//        $databaseRepository = $this->createMock(DatabaseRepository::class);
-//        $databaseRepository->expects($this->once())
-//            ->method('insert');
-        $databaseRepository = Mockery::mock(DatabaseRepository::class);
-        $databaseRepository->shouldReceive('insert')->once();
-
-        $showService = new ShowsService($this->tvMazeRepository, $databaseRepository);
-
-        $d = $this->invokeMethod($showService, 'insertShows', [$data]);
-        $this->assertDatabaseHas('shows', $expected);
+        return $method->invokeArgs($object, $parameters);
     }
 
     public function testProcessShowArray(): void
     {
         $show = Show::factory()->make();
 
-        $data =[
+        $data = [
             [
-                'id'   => $show['show_id'],
+                'id' => $show['show_id'],
                 'name' => $show['name'],
                 'image' => $show['image'],
                 'url' => $show['link'],
                 'status' => $show['status'],
-            ]];
+            ]
+        ];
 
         $expected = [
             'name' => $show['name'],

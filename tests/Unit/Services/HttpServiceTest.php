@@ -5,12 +5,13 @@ declare(strict_types=1);
 namespace Tests\Unit\Services;
 
 
-
 use App\Services\HttpService;
-use Tests\TestCase;
+use Generator;
 use GuzzleHttp\Client;
 use GuzzleHttp\Psr7\Response;
 use Illuminate\Support\Facades\Config;
+use ReflectionClass;
+use Tests\TestCase;
 
 
 class HttpServiceTest extends TestCase
@@ -19,35 +20,23 @@ class HttpServiceTest extends TestCase
 
     private $config;
 
-    public function setUp() :void
+    public function setUp(): void
     {
         $this->httpClientInterface = $this->createMock(Client::class);
-        $this->config  = $this->createMock(Config::class);
-
+        $this->config = $this->createMock(Config::class);
     }
 
-    public function invokeMethod(&$object, string $methodName, array $parameters = [])
+    public function getResponseDataProvider(): Generator
     {
-        $reflection = new \ReflectionClass(get_class($object));
-        $method = $reflection->getMethod($methodName);
-        $method->setAccessible(true);
-
-        return $method->invokeArgs($object, $parameters);
-    }
-
-    public function getResponseDataProvider()
-    {
-
-       yield 'successful request' => ['xyz.com', [], 200];
+        yield 'successful request' => ['xyz.com', [], 200];
     }
 
     /**
      * @dataProvider getResponseDataProvider
      */
 
-    public function testGetResponse($url, $query, $expect){
-
-
+    public function testGetResponse($url, $query, $expect): void
+    {
         $expectedResponse = (new Response($expect));
         $this->httpClientInterface
             ->method('get')
@@ -56,8 +45,17 @@ class HttpServiceTest extends TestCase
         $service = new HttpService(
             $this->httpClientInterface
         );
-        $result = $this->invokeMethod($service, 'getResponse', [ $url, $query, $expect]);
+        $result = $this->invokeMethod($service, 'getResponse', [$url, $query, $expect]);
 
-        $this->assertEquals( $expectedResponse->getStatusCode(), $result->getStatusCode());
+        $this->assertEquals($expectedResponse->getStatusCode(), $result->getStatusCode());
+    }
+
+    public function invokeMethod(&$object, string $methodName, array $parameters = [])
+    {
+        $reflection = new ReflectionClass(get_class($object));
+        $method = $reflection->getMethod($methodName);
+        $method->setAccessible(true);
+
+        return $method->invokeArgs($object, $parameters);
     }
 }

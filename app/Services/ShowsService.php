@@ -8,7 +8,7 @@ namespace App\Services;
 use App\Repository\DatabaseRepository;
 use App\Repository\TVMazeRepository;
 
-final class ShowsService
+class ShowsService
 {
     private $showsRepository;
 
@@ -41,9 +41,8 @@ final class ShowsService
     private function processLimit(): int
     {
         $latestRecord = $this->databaseRepository->fetchLatest();
-        $limit = $latestRecord->show_id ?? 0;
-
-        return (int) ($limit > 0 ? ceil($latestRecord->show_id / 250) : $limit);
+        $limit = $latestRecord['show_id'] ?? 0;
+        return (int)($limit > 0 ? ceil($limit / 250) : $limit);
     }
 
     private function insertShows(array $data): void
@@ -51,7 +50,7 @@ final class ShowsService
         foreach ($data as $show) {
             $show = array_key_exists('show', $show) ? $show['show'] : $show;
             $data = $this->processShowArray($show);
-            $this->databaseRepository->insert($data);
+            $this->databaseRepository->updateOrCreate($data);
         }
     }
 

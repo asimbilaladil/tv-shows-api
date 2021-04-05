@@ -13,6 +13,8 @@ class TVMazeRepository implements TVShowsRepositoryInterface
 
     private $searchShow;
 
+    private $httpService;
+
     public function __construct(HttpService $httpService)
     {
         $this->httpService = $httpService;
@@ -20,12 +22,12 @@ class TVMazeRepository implements TVShowsRepositoryInterface
         $this->searchShow = Config::get('shows.search_shows');
     }
 
-    public function fetchAll(int $limit)
+    public function fetchAll(int $limit): array
     {
         return $this->httpService->getData($this->shows, ['page' => $limit]);
     }
 
-    public function findByName(string $name)
+    public function findByName(string $name): array
     {
         return $this->httpService->getData($this->searchShow, ['q' => $name]);
     }

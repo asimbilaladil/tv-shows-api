@@ -10,25 +10,27 @@ use App\Models\Show;
 class DatabaseRepository implements DatabaseRepositoryInterface
 {
 
-    public function fetchAll(int $limit)
+    public function fetchAll(int $limit): array
     {
         $shows = Show::select('name', 'show_id', 'image', 'link')->paginate($limit);
         return (json_decode(json_encode($shows), true));
     }
 
-    public function findByName(string $name, int $limit)
+    public function findByName(string $name, int $limit): array
     {
         $shows = Show::select('name', 'show_id', 'image', 'link')->where('name', 'like', "%$name%")->paginate($limit);
         return (json_decode(json_encode($shows), true));
     }
 
-    public function insert($data)
+    public function updateOrCreate($data): array
     {
-        return Show::updateOrCreate($data);
+        $show = Show::updateOrCreate($data);
+        return (json_decode(json_encode($show), true));
     }
 
-    public function fetchLatest()
+    public function fetchLatest(): array
     {
-        return Show::latest('id')->first();
+        $show = Show::latest('id')->first() ?? [];
+        return (json_decode(json_encode($show), true));
     }
 }

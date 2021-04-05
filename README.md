@@ -29,7 +29,7 @@
 
 ## 6. Run database migration
 <ul>
-<li> docker-compose run --rm --no-deps php aristan migrate</li> 
+<li> docker-compose run --rm --no-deps php php artisan migrate</li> 
 </ul>
 
 

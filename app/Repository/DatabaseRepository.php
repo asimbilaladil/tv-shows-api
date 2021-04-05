@@ -1,5 +1,6 @@
 <?php
 
+declare(strict_types=1);
 
 namespace App\Repository;
 
@@ -17,7 +18,7 @@ class DatabaseRepository implements DatabaseRepositoryInterface
 
     public function findByName(string $name, int $limit)
     {
-        $shows =  Show::select('name', 'show_id', 'image', 'link')->where('name','like', "%$name%")->paginate($limit);
+        $shows = Show::select('name', 'show_id', 'image', 'link')->where('name', 'like', "%$name%")->paginate($limit);
         return (json_decode(json_encode($shows), true));
     }
 

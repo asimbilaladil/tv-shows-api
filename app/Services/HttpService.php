@@ -1,4 +1,6 @@
 <?php
+declare(strict_types=1);
+
 namespace App\Services;
 
 use GuzzleHttp\Client;
@@ -10,7 +12,7 @@ class HttpService
 
     public function getData(string $method, array $query): array
     {
-        $apiUrl     = Config::get('tvmaze.api_url');
+        $apiUrl     = Config::get('shows.api_url');
         $url        = sprintf('%s%s',$apiUrl, $method);
         $response   = $this->getResponse($url, $query);
         $result     = [
@@ -20,7 +22,7 @@ class HttpService
 
         if($response->getStatusCode() === 200){
             $result = [
-                "data"      => json_decode($response->getBody(), true),
+                "data"      => json_decode((string) $response->getBody(), true),
                 "status"    => true
             ];
         }

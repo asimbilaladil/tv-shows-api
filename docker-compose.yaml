@@ -1,0 +1,45 @@
+version: "3.0"
+services:
+# MySQL server
+  mysql:
+    container_name: mysql
+    build:
+      context: ./docker/mysql
+    restart: unless-stopped
+    environment:
+        - MYSQL_DATABASE=${DB_DATABASE}
+        - MYSQL_USER=${DB_USERNAME}
+        - MYSQL_PASSWORD=${DB_PASSWORD}
+        - MYSQL_ROOT_PASSWORD=${DB_PASSWORD}
+    ports:
+      - "${DB_PORT}:3306"
+# nginx server
+  nginx:
+    container_name: nginx
+    build:
+      context: ./docker/nginx
+      args:
+        - http_proxy
+        - https_proxy
+        - no_proxy
+    volumes:
+      - ./:/var/www/app
+      - ./docker/nginx/nginx.conf:/etc/nginx/nginx.conf
+      - ./docker/nginx/sites/:/etc/nginx/sites-available
+      - ./docker/nginx/conf.d/:/etc/nginx/conf.d
+      - ./docker/nginx/ssl:/etc/nginx/ssl
+    ports:
+      - "8080:80"
+      - "4433:443"
+    depends_on:
+      - php
+# php-fpm
+  php:
+    container_name: php
+    build:
+      context: ./docker/php-fpm
+    ports:
+      - "9000:9000"
+    volumes:
+      - ./:/var/www/app
+      - ./php/ini:/usr/local/etc/php // note that this line maps docker's /usr/local/etc/php
